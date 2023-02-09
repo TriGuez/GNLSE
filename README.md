@@ -91,7 +91,7 @@ propagationMap(Esave,t,lbd,lambda_low,lambda_high,L);
 ```
 Which will display all the slices in the matrix *Esave* in both domains : 
 
-![raman_shift](https://user-images.githubusercontent.com/121152666/212468153-7a9a40a2-2e42-4f42-b5d0-3d9b3b9b1d22.png)
+![image](https://user-images.githubusercontent.com/121152666/217881255-de63f13e-0c2b-43f5-9c73-384f8d56cf86.png)
 
 
 In the end, we can of course propagates over *L* without animation stuff : 
