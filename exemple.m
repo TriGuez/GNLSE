@@ -54,3 +54,4 @@ end
 % Eout = propagationFibre(Epump,L,h,l0,l1,tol,t,f,lbd,alpha,betas,gamma,...
 %     fR, 'Raman self frequency shift');
 % singlePlot(Eout, t, lbd, lambda_low, lambda_high, 'linear')
+propagationMap(Esave(1:end,:),t,lbd,lambda_low,lambda_high,L);
