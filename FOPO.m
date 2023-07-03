@@ -2,18 +2,18 @@ clear
 close all
 
 c = 299792458;
-Tspan = 1200e-12;
-lambda_low = 600e-9;
-lambda_high = 1800e-9;
-l0 = 1032e-9;
+Tspan = 1600e-12;
+lambda_low = 700e-9;
+lambda_high = 1700e-9;
+l0 = 1034e-9;
 f0 = c./l0;
 [t, dt, f, df, w, lbd, res] = initGNLSE(Tspan, l0, lambda_low);
 wshift = fftshift(w);
 
-J_p = 4e-6;
-tFWHM_p = 90e-15;
+J_p = 12e-6;
+tFWHM_p = 200e-15;
 t0_p = tFWHM_p/2/sqrt(log(2));
-C2_p = 2.6e-23;
+C2_p = 0.7e-22;
 l1 = l0;
 l2 = 810e-9;
 f_p = c/l1;
@@ -21,7 +21,7 @@ tshift = 0;
 w0 = 2*pi*f_p;
 P_p = 0.94*(J_p/tFWHM_p);
 Epump = gaussianPulse(P_p,C2_p,t0_p,f_p, tshift, t, f, f0);
-singlePlot(Epump, t, lbd, lambda_low, lambda_high, 'log')
+singlePlot(Epump, t, lbd, lambda_low, lambda_high, 'linear')
 drawnow
 spec = fftshift(fft(Epump)*dt)/1e-12;
 % phi_f = angle(spec);
@@ -66,7 +66,7 @@ E = Epump;
 %     E = Efeedback+Epump;
     [Eout, ~, ~] = propagationFibre(E, L_SUP5, h, l0, l1, tol, t, f, lbd,...
                 alpha, betas_SUP5, gamma_SUP5, fR, 'SUP5');
-    singlePlot(Eout, t, lbd, lambda_low, lambda_high, 'log');
+    singlePlot(Eout, t, lbd, lambda_low, lambda_high, 'linear');
 %     Esave(jk,:) = Eout;
 %     save('datas.mat','t','f','lbd','Esave')
 % end

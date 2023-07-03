@@ -22,7 +22,7 @@ h = 6.62607004e-34;
 wshift = fftshift(2*pi*f);
 
 noise = sqrt(h*fftshift(f+f0)/df*(res-1)/res).*exp(-1i*rand(1,res)*2*pi);
-% noise = zeros(1,length(noise));
+%noise = zeros(1,length(noise));
 spectral_phase = C2/2*wshift.^2;
 E = sqrt(P).*exp(-0.5*(((t-t_shift)/t0).^2)).*exp(-1i*2*pi*(f0-f1).*t);
 E = ifft(fft(E).*dt.*exp(-1i*spectral_phase)+noise)/dt;
