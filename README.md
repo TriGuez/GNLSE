@@ -1,7 +1,7 @@
 # Generalised Nonlinear Schrödinger Equation solver for nonlinear optical pulse propagation in optical fibers
 This solver is based on the Runge-Kutta 4 in interaction picture algorithm described in [1] for solving the following nonlinear Schrödinger equation [2] : 
 
-$${{\partial A(z,T)} \over {\partial z}} = -{{\alpha(\omega)}\over{2}} A(z,T) +{\sum}_{k \geq 2}{{{i^{k+1}}\over{k!}}\beta_{k}{{\partial^{k}A(z,T)}\over{\partial T^{k}}}} +... $$
+$${{\partial A(z,T)} \over {\partial z}} = -{{\alpha(\omega)}\over{2}} A(z,T) +\sum_{k \geq 2}{{{i^{k+1}}\over{k!}}\beta_{k}{{\partial^{k}A(z,T)}\over{\partial T^{k}}}} +...$$
 
 $$... i\gamma\Bigg(1+\tau_{shock}{{\partial}\over{\partial T}}\Bigg)\times \Bigg(A(z,T){\int}_{-\infty}^{\infty}{R(T')\vert A(z,T-T')\vert^{2}dT'}\Bigg)\ \ \ \ \ \ \ \ \ \ \textbf{(1)}$$
 
@@ -53,7 +53,7 @@ Epump = sechPulse(P_p,0,t0_p,f_p,tshift,t,f,f0);
 ```
 The pulse is here defined as a 2<sup>nd</sup> order soliton, using the soliton area theorem. $l1$ is defining the central wavelength of the pulse, which is the same here as the central wavelength of the simulation. We also need to compute the corresponding frequency, i.e $f_p$ We can add a temporal shift of the maximum of the pulse. The complex enveloppe of the pulse is then defined using `sechPulse()` as : 
 
-$$ A(z=0,t) = \sqrt{P} \operatorname{sech}\Bigg({{t-t_{shift}}\over{t_0}} \Bigg) \operatorname{exp}\Bigg({i\Big({{C_2}\over{2}}(\omega-\omega_0)^2\Big)-\omega_0 t} \Bigg)\ \ \ \ \ \ \ \ \ \ \textbf{(2)} $$
+$$ A(z=0,t) = \sqrt{P} \text{ sech}\Bigg({{t-t_{shift}}\over{t_0}} \Bigg) {\exp}\Bigg({i\Big({{C_2}\over{2}}(\omega-\omega_0)^2\Big)-\omega_0 t} \Bigg)\ \ \ \ \ \ \ \ \ \ \textbf{(2)} $$
 
 We can see here that it's possible to add another parameter, called $C_2$ which is corresponding to the second order taylor coefficient of the spectral phase of the pulse. This parameter allow the pulse to be chirped.
 
@@ -116,13 +116,13 @@ $$\widehat{N} = i\gamma\Bigg(1+\tau_{shock}{{\partial}\over{\partial T}}\Bigg)\t
 
 Now let's define : 
 
-$$ A_{I}(z,T) = \operatorname{exp}({{(z-z')}\widehat{L}})A(z,T)\ \ \ \ \ \ \ \ \ \ \textbf{(6)}$$
+$$ A_{I}(z,T) = {\exp}({{(z-z')}\widehat{L}})A(z,T)\ \ \ \ \ \ \ \ \ \ \textbf{(6)}$$
 
 Applied to eq. **(2)** : 
 
 $$ {{\partial A_{I}(z,T)}\over{\partial z}} = \widehat{N_{I}} A_{I}(z,T) \ \ \ \ \ \ \ \ \ \ \textbf{(7)}$$ 
 
-$$ \widehat{N}_{I} = \operatorname{exp}({{-(z-z')}\widehat{L}})\widehat{N} \operatorname{exp}({{(z-z')}\widehat{L}}) \ \ \ \ \ \ \ \ \ \ \textbf{(8)}$$
+$$ \widehat{N}_{I} = {\exp}({{-(z-z')}\widehat{L}})\widehat{N} {\exp}({{(z-z')}\widehat{L}}) \ \ \ \ \ \ \ \ \ \ \textbf{(8)}$$
 
 So, by setting $z' = z+{h\over 2}$, it's easy to integrate eq. **(7)** using standard integration algorithms.
 
@@ -214,7 +214,7 @@ Description :
 
 This function creates the complex enveloppe vector of a gaussian optical pulse. An amplitude noise of one photon per spectral node is added, based on the following : 
 
-$$A_{noise}(t) = \mathcal{F}^{-1}\Bigg[({T_{max}\hbar \omega})^{1/2} \operatorname{exp}(-i\psi(\omega_n))\Bigg] (t) \ \ \ \ \ \ \ \ \ \ \textbf{(9)}$$ 
+$$A_{noise}(t) = \mathcal{F}^{-1}\Bigg[({T_{max}\hbar \omega})^{1/2} {\exp}(-i\psi(\omega_n))\Bigg] (t) \ \ \ \ \ \ \ \ \ \ \textbf{(9)}$$ 
 
 where $\psi(\omega_n)$ follows a normal distribution.
 
