@@ -110,7 +110,7 @@ $$ {{\partial A(z,T)} \over {\partial z}} = \Big(\widehat{L} + \widehat{N}\Big) 
 
 Where $\widehat{L}$ stands for the linear part of eq. **(1)**, i.e group velocity dispersion and linear losses operator and $\widehat{N}$ stands for the nonlinear part.
 
-$$\widehat{L} = -{{\alpha(\omega)}\over{2}} +{\sum}_{k \geq 2}{{{i^{k+1}}\over{k!}}\beta_{k}{{\partial^{k}}\over{\partial T^{k}}}}\ \ \ \ \ \ \ \ \ \  \textbf{(4)}$$
+$$\widehat{L} = -{{\alpha(\omega)}\over{2}} +\sum_{k \geq 2}{{{i^{k+1}}\over{k!}}\beta_{k}{{\partial^{k}}\over{\partial T^{k}}}}\ \ \ \ \ \ \ \ \ \  \textbf{(4)}$$
 
 $$\widehat{N} = i\gamma\Bigg(1+\tau_{shock}{{\partial}\over{\partial T}}\Bigg)\times\Bigg({\int}_{-\infty}^{\infty}{R(T')\vert A(z,T-T')\vert^{2}dT'}\Bigg)\ \ \ \ \ \ \ \ \ \ \textbf{(5)}$$
 
