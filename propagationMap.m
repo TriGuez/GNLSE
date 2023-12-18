@@ -1,4 +1,4 @@
-function propagationMap(E, t, lbd, lambda_low, lambda_high, L)
+function propagationMap(E, t, lbd, lambda_low, lambda_high, L, spectralScale)
 dt = t(2) -t(1);
 [slices, nn] = size(E);
 Zs = linspace(0,L, slices);
@@ -30,13 +30,24 @@ ylim([min(t)*1e12 max(t)*1e12])
 shading interp
 ylabel('Delay (ps)')
 colormap jet
-
-subplot(2,1,2)
-pcolor(Zs,lbd*1e9,Snorm');
-ylim([lambda_low*1e9 lambda_high*1e9])
-xlim([0 L])
-ylabel('Wavelength (nm)')
-xlabel('Propagation distance (m)')
-% view(2)
-shading interp
-colormap jet
+if strcmp(spectralScale,'linear')
+    subplot(2,1,2)
+    pcolor(Zs,lbd*1e9,Snorm');
+    ylim([lambda_low*1e9 lambda_high*1e9])
+    xlim([0 L])
+    ylabel('Wavelength (nm)')
+    xlabel('Propagation distance (m)')
+    % view(2)
+    shading interp
+    colormap jet
+elseif strcmp(spectralScale,'log')
+    subplot(2,1,2)
+    pcolor(Zs,lbd*1e9,10*log10(Snorm'+1));
+    ylim([lambda_low*1e9 lambda_high*1e9])
+    xlim([0 L])
+    ylabel('Wavelength (nm)')
+    xlabel('Propagation distance (m)')
+    % view(2)
+    shading interp
+    colormap jet
+end

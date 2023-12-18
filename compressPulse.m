@@ -21,12 +21,12 @@ if rad2 < rad1
         rad2 = gaussRadius(t, AC2, '1/e2');
         singlePlot(E2, t, lbd, lambda_low, lambda_high, 'linear')
         subplot(2,1,1)
-        xlim([-(rad2+rad2*3) (rad2+rad2*3)]*1e12)
+        % xlim([-(rad2+rad2*3) (rad2+rad2*3)]*1e12)
     end
     Ecomp = E;
     singlePlot(E, t, lbd, lambda_low, lambda_high, 'linear')
     subplot(2,1,1)
-    xlim([-(rad2+rad2*3) (rad2+rad2*3)]*1e12)
+    % xlim([-(rad2+rad2*3) (rad2+rad2*3)]*1e12)
 else
     Ltot = 0;
     Ecomp = 0;
