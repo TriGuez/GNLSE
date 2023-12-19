@@ -7,7 +7,7 @@ lambda_low = 700e-9;
 lambda_high = 1700e-9;
 l0 = 1040e-9;
 f0 = c./l0;
-[t, dt, f, df, w, lbd, res] = initGNLSE(Tspan, l0, lambda_low);
+[t, dt, f, df, w, lbd, res, lambda_low, lambda_high] = initGNLSE(Tspan, l0, lambda_low, lambda_high);
 wshift = fftshift(w);
 
 J_p = 3e-6;

@@ -1,6 +1,6 @@
 function n_up = n2Yb(wshift ,rho_w,sigma_a,sigma_e, sigma_ap, sigma_ep, lbd_p, Pp, gamma_P, frep, rcore, N_ions)
 
-tau = 88e-3; % 88 ms for Yb
+tau = 0.88e-3; % 0.88 ms for Yb
 hbar = (6.62607015e-34)/(2*pi); % normalized Planck constant
 wp = 2*pi*(299792458/lbd_p); % Pump angular frequency
 

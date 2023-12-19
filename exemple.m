@@ -10,13 +10,13 @@ c = 299792458;
 Tspan = 5e-12;
 lambda_low = 750e-9;
 lambda_high = 1550e-9;
-l0 = 1040e-9;
+l0 = 800e-9;
 Tspan = 4e-12;
 lambda_low = 500e-9;
 lambda_high = 1025e-9;
 l0 = 800e-9;
 f0 = c./l0;
-[t, dt, f, df, w, lbd, res] = initGNLSE(Tspan, l0, lambda_low);
+[t, dt, f, df, w, lbd, res, lambda_low, lambda_high] = initGNLSE(Tspan, l0, lambda_low, lambda_high);
 wshift = fftshift(w);
 tol = 1e-5;
 
@@ -30,7 +30,7 @@ L = 10;
 fR = 0.18; % Pas de Raman si nul
 
 % Définition de l'impulsion initiale
-N = 1;
+N = 2;
 
 tFWHM_p = 100e-15;
 t0_p = tFWHM_p/2/sqrt(log(2));
@@ -41,7 +41,7 @@ P_p = (N^2*abs(betas(1)))./(t0_p^2*gamma);
 Epump = sechPulse(P_p,0,t0_p,f_p,tshift,t,f,f0);
 
 % Paramètres pour animation + sauvegarde dans une matrice
-slices = 50;
+slices = 100;
 dL = L/slices;
 h = dL/1000;
 Esave = zeros(slices+1,length(t));

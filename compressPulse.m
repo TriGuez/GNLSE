@@ -1,4 +1,4 @@
-unction [Ecomp, Ltot] = compressPulse(E, t, f, l0, lc, betas, Linit, lambda_low, lambda_high, lbd)
+function [Ecomp, Ltot] = compressPulse(E, t, f, l0, lc, betas, Linit, lambda_low, lambda_high, lbd)
 format long g
 E = centerPulse(E,t);
 AC1 = autocoTrace(E);

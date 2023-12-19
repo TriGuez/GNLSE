@@ -21,19 +21,17 @@ Tspan = max(t);
 spec = fftshift(fft(E)*dt)/1e-12;
 subplot(2,1,1)
 yyaxis left
-plot(t*1e12, abs(E).^2)
-title(["Pulse width : " (num2str(1e12*2*gaussRadius(t, abs(E).^2,'FWHM'))) "ps. AC width : " num2str(1e12*2*gaussRadius(t, autocoTrace(E),'FWHM')) " ps"])
+plot(t*1e12, 1e-3.*abs(E).^2,'LineWidth',1.5)
 xlabel('Delay (ps)')
-ylabel('Power (W)')
+ylabel('Power (kW)')
 xlim([-Tspan*1e12 Tspan*1e12])
 yyaxis right
-plot(t*1e12, autocoTrace(E))
+plot(t*1e12, autocoTrace(E),'LineWidth',1.5)
 ylabel('SHG intensity (u.a)')
 if strcmp(spectralScale,'log')
     subplot(2,1,2)
-    yyaxis left
-    plot(lbd*1e9, 10*log10(abs(spec).^2))
-    title(["Spectral width : " num2str(1e9*2*gaussRadius(lbd, abs(spec).^2,'FWHM')) "nm"])
+%     yyaxis left
+    plot(lbd*1e9, 10*log10(abs(spec).^2),'-b','LineWidth',1.5)
     xlabel('Wavelength (nm)')
     ylabel('Power (dB)')
     xlim([lambda_low*1e9 lambda_high*1e9])
@@ -43,8 +41,7 @@ if strcmp(spectralScale,'log')
 elseif strcmp(spectralScale,'linear')
     subplot(2,1,2)
     %yyaxis left
-    plot(lbd*1e9,abs(spec).^2)
-    title(["Spectral width : " num2str(1e9*2*gaussRadius(-lbd, abs(spec).^2,'FWHM')) "nm"])
+    plot(lbd*1e9,abs(spec).^2,'LineWidth',1.5)
     xlabel('Wavelength (nm)')
     ylabel('Power (W)')
     xlim([lambda_low*1e9 lambda_high*1e9])

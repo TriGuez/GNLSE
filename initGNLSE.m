@@ -1,4 +1,4 @@
-function [t, dt, f, df, w, lbd, res] = initGNLSE(Tspan, l0, lambda_low)
+function [t, dt, f, df, w, lbd, res, lambda_low, lambda_high] = initGNLSE(Tspan, l0, lambda_low, lambda_high)
 
 % This function creates the usefull vectors & values
 % INPUTS : 
@@ -29,3 +29,18 @@ f = (-res/2:(res/2)-1)*df;
 w = 2*pi*f;
 lbd = c./(f+f0);
 lbd(lbd<0) = nan;
+
+idx_range = find((lbd>lambda_low & lbd < lambda_high));
+if ( isnan(lambda_low)&&isnan(lambda_high) )
+    idx_range = find(isnan(lbd));
+    idx_range = [max(idx_range)+1 length(lbd)-1];
+    lambda_low = min(lbd);
+    lambda_high = max(lbd);
+else
+    if lambda_low < lbd(idx_range(end))
+        lambda_low = round(lbd(idx_range(end))*1e9).*1e-9;
+    end
+    if lambda_high > lbd(idx_range(1))
+        lambda_high = round(lbd(idx_range(1))*1e9).*1e-9;
+    end
+end
