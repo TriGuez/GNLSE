@@ -20,14 +20,14 @@ c = 299792458;
 Tspan = max(t);
 spec = fftshift(fft(E)*dt)/1e-12;
 subplot(2,1,1)
-yyaxis left
+%yyaxis left
 plot(t*1e12, 1e-3.*abs(E).^2,'LineWidth',1.5)
 xlabel('Delay (ps)')
 ylabel('Power (kW)')
 xlim([-Tspan*1e12 Tspan*1e12])
-yyaxis right
-plot(t*1e12, autocoTrace(E),'LineWidth',1.5)
-ylabel('SHG intensity (u.a)')
+%yyaxis right
+%plot(t*1e12, autocoTrace(E),'LineWidth',1.5)
+%ylabel('SHG intensity (u.a)')
 if strcmp(spectralScale,'log')
     subplot(2,1,2)
 %     yyaxis left
