@@ -3,7 +3,7 @@ import pyfftw
 import multiprocessing
 import tqdm
 import matplotlib.pyplot as plt
-
+from misc_math import *
 
 
 def initGNLSE(Tspan, l0, lambda_low):
@@ -111,6 +111,32 @@ def rectPulse(P, tFWHM, f1, t, f, f0):
     E = np.fft.ifft(np.fft.fft(E)*dt*np.exp(-1j*spectral_phase)+noise)/dt
     return E
 
+def sechPulse(P, C2, t0, f1, tshift, t, f, f0) :
+# This function computes the complex enveloppe of a gaussian optical pulse
+# centered at frequency f1 and optical noise of one photon per spectral node
+# INPUTS : 
+#       P : Peak power of the fourier transform limited pulse [W]
+#       C2 : 2nd order spectral phase of the pulse [sÂ²]
+#       t0 : 1/e radius of the fourier transform limited pulse [s]
+#       f1 : Central frequency of the pulse [Hz]
+#       tshift : Time offset of the pulse [s]
+#       t : Time vector of the simulation [s]
+#       f : Frequency vector of the pulse [Hz]
+#       f0 : Central frequency of the simulation [Hz]
+# OUTPUTS :
+#       E : Complex enveloppe of the optical pulse 
+    dt = t[1]-t[0]
+    df = f[1] - f[0]
+    res = np.size(t)
+    h = 6.62607004e-34
+    wshift = np.fft.fftshift(2*np.pi*f)
+
+    noise = np.sqrt(h*np.fft.fftshift(f+f0)/df*(res-1)/res)*np.exp(-1j*np.random.rand(res,)*2*np.pi)
+    noise[np.isnan(noise)]=0+0*1j
+    spectral_phase = C2/2*wshift**2
+    E = np.sqrt(P)*sech((t-tshift)/t0)*np.exp(-1j*2*np.pi*(f0-f1)*t)
+    E = np.fft.ifft(np.fft.fft(E)*dt*np.exp(-1j*spectral_phase)+(noise))/dt
+    return E
 
 def autocoTrace(E) :
     x = pyfftw.empty_aligned(np.size(E), dtype = 'complex128')
@@ -386,15 +412,26 @@ def adaptiveSolver(E, L , h, alpha, betas, gamma, fR, hR_w, tau_shock, lbd, wshi
     progress_bar.close()
     return E
 
+def propagationFibre(E, L, h, l0, lc, tol, t, f, lbd, alpha, betas, gamma, fR) :
+    c = 299792458
+    f0 = c/l0
+    fc = c/lc
+    f = (f+f0) - fc
+    wshift = np.fft.fftshift(2*np.pi*f)
+    hR_w = ramanResponseBW(fR,wshift)
+    tau_shock = 1/(2*np.pi*fc)
+    return adaptiveSolver(E, L, h, alpha, betas, gamma, fR, hR_w, tau_shock, lbd, wshift, tol)
+
+
 def singlePlot(E, t, lbd, lambda_low, lambda_high, spectralScale = 'log') :
     dt = t[1]-t[0]
     Tspan = np.max(t)
     spec = np.fft.fftshift(np.fft.fft(E)*dt)/1e-12
     fig, axs = plt.subplots(2)
-    axs[0].plot(t*1e12, np.abs(E)**2)
+    axs[0].plot(t*1e12, 1e-3*np.abs(E)**2)
     axs[0].set_xlim((-Tspan*1e12, Tspan*1e12))
     axs[0].set_xlabel('Delay (ps)')
-    axs[0].set_ylabel('Power (W)')
+    axs[0].set_ylabel('Power (kW)')
     if spectralScale == 'log' :
         axs[1].plot(lbd*1e9,10*np.log10(np.abs(spec)**2))
     if spectralScale == 'linear' :
@@ -403,3 +440,44 @@ def singlePlot(E, t, lbd, lambda_low, lambda_high, spectralScale = 'log') :
     axs[1].set_xlabel('Wavelength (nm)')
     axs[1].set_ylabel('Power (dB)')
     plt.show()
+
+def n2Yb(wshift, rho_w, sigma_a, sigma_e, sigma_ap, sigma_ep, lbd_p, Pp, Gamma_P, frep, rcore, Nions) :
+    tau = 0.88e-3
+    hbar = (6.62607015e-34)/(2*np.pi)
+    wp = 2*np.pi*(299792458/lbd_p)
+    num = (((Gamma_P*sigma_ap)/(hbar*wp))*Pp) + frep*np.trapz(((sigma_a*rho_w)/(hbar*wshift)), wshift)
+    denom = (((Gamma_P*(sigma_ap+sigma_ep))/(hbar*wp))*Pp) + frep*np.trapz((((sigma_a+sigma_e)*rho_w)/(hbar*wshift)), wshift) + ((np.pi*rcore**2)/tau)
+    return Nions*(num/denom)
+
+def RK4Pp(sigma_ap, sigma_ep, h, n2z,Nions, Pp, gamma_P, lbd_p) :
+    k1 =  ((sigma_ep + sigma_ap)*n2z - sigma_ap*Nions)*Pp*gamma_P - (silicaLosses(lbd_p)*Pp)
+    k2 =  ((sigma_ep + sigma_ap)*n2z - sigma_ap*Nions)*gamma_P*(Pp + (h/2)*k1) - (silicaLosses(lbd_p)*(Pp+(h/2)*k1))
+    k3 =  ((sigma_ep + sigma_ap)*n2z - sigma_ap*Nions)*gamma_P*(Pp+(h/2)*k2)- (silicaLosses(lbd_p)*(Pp+(h/2)*k2))
+    k4 =  ((sigma_ep + sigma_ap)*n2z - sigma_ap*Nions)*gamma_P*(Pp+h*k3)- (silicaLosses(lbd_p)*(Pp+(h)*k3))
+
+    return Pp + h*((k1/6)+(k2/3)+(k3/3)+(k4/6))
+
+def adaptiveSolverGain(E, L , h, alpha, betas, gamma, fR, hR_w, tau_shock, lbd, wshift, tol,
+                        frep, Pp, lbd_p, sigma_a,sigma_e, sigma_ap, sigma_ep, N_ions, r_core,Gamma_P,ww0):
+    progress_bar = tqdm.tqdm(total=L,unit='m')
+    Z_prop = 0
+    while Z_prop < L:
+        progress_bar.n = Z_prop
+        Z_prop = Z_prop + h
+        Uf = RK4ip(E, h, alpha, betas, gamma, fR, hR_w, tau_shock, lbd, wshift)
+        Uc = RK4ip(RK4ip(E,h/2,alpha,betas,gamma,fR,hR_w,tau_shock,lbd,wshift),h/2,alpha,betas,gamma,fR,hR_w,tau_shock,lbd,wshift)
+        error = np.sqrt(np.sum(np.abs(Uf-Uc)**2))/np.sqrt(np.sum(np.abs(Uf)**2))
+        factor = tol/error
+
+        if error > 2*tol :
+            Z_prop = Z_prop-h
+        else : 
+            E = (16/15)*Uf-(1/15)*Uc
+        
+        h = h*factor**(1/5)
+
+        if Z_prop + h > L :
+            h = L - Z_prop
+        progress_bar.update(0)
+    progress_bar.close()
+    return E

@@ -43,3 +43,6 @@ def gaussRadius(x,y,radiusType = '1/e') :
         b = np.max(x[idx])
         rad = (b-a)/2
     return rad
+
+def sech(x) :
+    return 1/np.cosh(x)
