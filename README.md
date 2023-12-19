@@ -256,7 +256,7 @@ Outpus :
 ## - initGNLSE.m
 Usage : 
 ```Matlab
-[t, dt, f, df, w, lbd, res] = initGNLSE(Tspan, l0, lambda_low)
+[t, dt, f, df, w, lbd, res, lambda_low, lambda_high] = initGNLSE(Tspan, l0, lambda_low, lambda_high)
 ```
 
 Description : 
