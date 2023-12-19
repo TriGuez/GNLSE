@@ -20,7 +20,7 @@ l0 = 1040e-9;
 f0 = c./l0;
 [t, dt, f, df, w, lbd, res] = initGNLSE(Tspan, l0, lambda_low);
 wshift = fftshift(w);
-tol = 1e-5;
+tol = 1e-7;
 ```
 This section is creating the usefull axes & values for the simulation, through the `initGNLSE()` function. Also, we need to define some physical values, such as half duration of the time window, the lowest & the highest wavelength of the simulation, and the central frequency of the simulation, which is set here to 1.10 $^{-5}$ .
 
@@ -60,9 +60,9 @@ We can see here that it's possible to add another parameter, called $C_2$ which 
 Since the physical parameters are defined, we can now focus on the numerical simulation. In the case of a propagation over a small distance, it si possible to create an animation of the propagation. We need first to set some parameters : 
 
 ```Matlab
-slices = 200;
+slices = 500;
 dL = L/slices;
-h = dL/1000;
+h = dL/10000;
 Esave = zeros(slices+1,length(t));
 Eout = Epump;
 Esave(1,:) = Epump;
