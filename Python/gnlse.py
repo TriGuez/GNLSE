@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from misc_math import *
 
 
-def initGNLSE(Tspan, l0, lambda_low):
+def initGNLSE(Tspan, l0, lambda_low, lambda_high):
 # This function creates the usefull vectors & values 
 # INPUTS : 
 #       Tspan : half width of the temporal window [s]
@@ -34,8 +34,20 @@ def initGNLSE(Tspan, l0, lambda_low):
     w = 2*np.pi*f
     lbd = c/(f+f0)
     lbd[lbd<0] = float('nan')
-    
-    return t, dt, f, df, w, lbd, res
+
+    idx_range = np.argwhere((lbd>lambda_low) & (lbd < lambda_high))
+    if ((np.isnan(lambda_low)) & np.isnan(lambda_high)) :
+        idx_range = np.argwhere(np.isnan(lbd))
+        idx_range = np.asarray([np.max(idx_range)+1, np.size(lbd)-1])
+        lambda_low = np.min(lbd)
+        lambda_low = np.max(lbd)
+    else :
+        if (lambda_low < lbd[idx_range[np.size(idx_range)-1]]) :
+            lambda_low = np.round(lbd[idx_range[np.size(idx_range)-1]]*1e9)*1e-9
+        if (lambda_high > lbd[idx_range[0]]) :
+            lambda_high = np.round(lbd[idx_range[0]]*1e9)*1e-9
+
+    return t, dt, f, df, w, lbd, res, lambda_low, lambda_high
 
 def spectralFilter(E, l_c, lFWHM, t, lbd, filterType='gaussian') : 
 # Computes a spectral filtering of the input optical field
@@ -227,16 +239,18 @@ def silicaLosses(lbd) :
 #       lbd : Wavelength vector [m]
 # OUTPUTS : 
 #       losses : Losses vector [m?Â¹]
+
     auv = 0.001*np.exp((4.67e-6)/lbd)/1000/4.343
     air = 6e11*np.exp(-(47.8e-6)/lbd)/1000/4.343
     asc = ((1.3/((lbd*1e6)**4))+1)/1000/4.343
     aoh = (7/(1+((lbd-1.380e-6)/16e-9)**2))/1000/4.343
     losses = auv + air + asc + aoh
-    for j in range(0,np.size(lbd)):
-        if lbd[j]<300e-9 :
-            losses[j] = 0
-        if lbd[j]>2500e-9 :
-            losses[j] = 0
+    if np.size(lbd) > 1 :
+        for j in range(0,np.size(lbd)):
+            if lbd[j]<300e-9 :
+                losses[j] = 0
+            if lbd[j]>2500e-9 :
+                losses[j] = 0
     return losses
 
 
@@ -360,7 +374,7 @@ def RK4ip(E, h, alpha, betas, gamma, fR, hR_w, tau_shock, lbd, wshift) :
     return ifft()
 
 
-def adaptiveSolver(E, L , h, alpha, betas, gamma, fR, hR_w, tau_shock, lbd, wshift, tol):
+def adaptiveSolver(E, L , h, alpha, betas, gamma, fR, hR_w, tau_shock, t, lbd, wshift, tol):
 # This function computes the complex enveloppe of an optical pulse during its
 # propagation in a given optical fiber, by solving the following generalised 
 # nonlinear SchrÃ¶dinger equation for the complex field A : 
@@ -420,7 +434,7 @@ def propagationFibre(E, L, h, l0, lc, tol, t, f, lbd, alpha, betas, gamma, fR) :
     wshift = np.fft.fftshift(2*np.pi*f)
     hR_w = ramanResponseBW(fR,wshift)
     tau_shock = 1/(2*np.pi*fc)
-    return adaptiveSolver(E, L, h, alpha, betas, gamma, fR, hR_w, tau_shock, lbd, wshift, tol)
+    return adaptiveSolver(E, L, h, alpha, betas, gamma, fR, hR_w, tau_shock, t, lbd, wshift, tol)
 
 
 def singlePlot(E, t, lbd, lambda_low, lambda_high, spectralScale = 'log') :
@@ -434,11 +448,13 @@ def singlePlot(E, t, lbd, lambda_low, lambda_high, spectralScale = 'log') :
     axs[0].set_ylabel('Power (kW)')
     if spectralScale == 'log' :
         axs[1].plot(lbd*1e9,10*np.log10(np.abs(spec)**2))
+        axs[1].set_ylabel('Power (dB)')
     if spectralScale == 'linear' :
         axs[1].plot(lbd*1e9, np.abs(spec)**2)
+        axs[1].set_ylabel('Power (W)')
     axs[1].set_xlim((lambda_low*1e9, lambda_high*1e9))
     axs[1].set_xlabel('Wavelength (nm)')
-    axs[1].set_ylabel('Power (dB)')
+
     plt.show()
 
 def n2Yb(wshift, rho_w, sigma_a, sigma_e, sigma_ap, sigma_ep, lbd_p, Pp, Gamma_P, frep, rcore, Nions) :
@@ -457,15 +473,24 @@ def RK4Pp(sigma_ap, sigma_ep, h, n2z,Nions, Pp, gamma_P, lbd_p) :
 
     return Pp + h*((k1/6)+(k2/3)+(k3/3)+(k4/6))
 
-def adaptiveSolverGain(E, L , h, alpha, betas, gamma, fR, hR_w, tau_shock, lbd, wshift, tol,
+def adaptiveSolverGain(E, L , h, alpha, betas, gamma, fR, hR_w, tau_shock, t, lbd, wshift, tol,
                         frep, Pp, lbd_p, sigma_a,sigma_e, sigma_ap, sigma_ep, N_ions, r_core,Gamma_P,ww0):
     progress_bar = tqdm.tqdm(total=L,unit='m')
     Z_prop = 0
+    dt = t[1]-t[0]
+    Pump_out = 0
+    S = np.fft.fftshift(np.fft.fft(E)*dt)/np.sqrt(2*np.pi)
+    rho_w = np.abs(S)**2
     while Z_prop < L:
         progress_bar.n = Z_prop
         Z_prop = Z_prop + h
-        Uf = RK4ip(E, h, alpha, betas, gamma, fR, hR_w, tau_shock, lbd, wshift)
-        Uc = RK4ip(RK4ip(E,h/2,alpha,betas,gamma,fR,hR_w,tau_shock,lbd,wshift),h/2,alpha,betas,gamma,fR,hR_w,tau_shock,lbd,wshift)
+        n_up = n2Yb(ww0, rho_w, sigma_a, sigma_e, sigma_ap, sigma_ep, lbd_p, Pp, Gamma_P, frep, r_core, N_ions)
+        Pp = RK4Pp(sigma_ap, sigma_ep, h, n_up, N_ions, Pp, Gamma_P, lbd_p)
+        S = np.fft.fftshift(np.fft.fft(E) * dt) / np.sqrt(2 * np.pi)
+        rho_w = np.abs(S) ** 2
+        g = (sigma_a + sigma_e)*n_up - sigma_a*N_ions
+        Uf = RK4IPGain(E, h, alpha, betas, gamma, fR, hR_w, tau_shock, lbd, wshift, g)
+        Uc = RK4IPGain(RK4IPGain(E,h/2,alpha,betas,gamma,fR,hR_w,tau_shock,lbd,wshift, g),h/2,alpha,betas,gamma,fR,hR_w,tau_shock,lbd,wshift,g)
         error = np.sqrt(np.sum(np.abs(Uf-Uc)**2))/np.sqrt(np.sum(np.abs(Uf)**2))
         factor = tol/error
 
@@ -480,4 +505,87 @@ def adaptiveSolverGain(E, L , h, alpha, betas, gamma, fR, hR_w, tau_shock, lbd, 
             h = L - Z_prop
         progress_bar.update(0)
     progress_bar.close()
-    return E
+    return E, Pump_out
+
+def RK4IPGain(E, h, alpha, betas, gamma, fR, hR_w, tau_shock, lbd, wshift,g) :
+    y = pyfftw.empty_aligned(np.size(wshift), dtype='complex128')
+    Y = pyfftw.empty_aligned(np.size(wshift), dtype='complex128')
+    fft = pyfftw.FFTW(y, Y, threads=multiprocessing.cpu_count())
+    ifft = pyfftw.FFTW(Y, y, direction='FFTW_BACKWARD', threads=multiprocessing.cpu_count())
+
+    lbd_l = lbd
+    lbd_l[np.isnan(lbd_l)] = 0
+    alpha = np.fft.fftshift(silicaLosses(lbd_l) + alpha)
+
+    beta = betas[0] / 2 * wshift ** 2
+    for jl in range(1, np.size(betas)):
+        beta = beta + betas[jl] / np.math.factorial(jl + 2) * wshift ** (jl + 2)
+    g = np.fft.fftshift(g)
+    opdisphalf = np.exp((-alpha / 2 - 1j * beta + g/2) * h / 2)
+    y[:] = E
+    TEip = fft() * opdisphalf
+
+    if fR > 0:
+        k1 = opdisphalf * nonlinearStepFull(E, h, fR, hR_w, gamma, tau_shock, wshift)
+
+        Y[:] = TEip + k1 / 2
+        Ehalf2 = ifft()
+        k2 = nonlinearStepFull(Ehalf2, h, fR, hR_w, gamma, tau_shock, wshift)
+
+        Y[:] = TEip + k2 / 2
+        Ehalf3 = ifft()
+        k3 = nonlinearStepFull(Ehalf3, h, fR, hR_w, gamma, tau_shock, wshift)
+
+        Y[:] = opdisphalf * (TEip + k3)
+        Ehalf4 = ifft()
+        k4 = nonlinearStepFull(Ehalf4, h, fR, hR_w, gamma, tau_shock, wshift)
+    else:
+        k1 = opdisphalf * nonlinearStep(E, h, gamma, tau_shock, wshift)
+
+        Y[:] = TEip + k1 / 2
+        Ehalf2 = ifft()
+        k2 = nonlinearStep(Ehalf2, h, gamma, tau_shock, wshift)
+
+        Y[:] = TEip + k2 / 2
+        Ehalf3 = ifft()
+        k3 = nonlinearStep(Ehalf3, h, gamma, tau_shock, wshift)
+
+        Y[:] = opdisphalf * (TEip + k3)
+        Ehalf4 = ifft()
+        k4 = nonlinearStep(Ehalf4, h, gamma, tau_shock, wshift)
+
+    Y[:] = opdisphalf * (TEip + k1 / 6 + k2 / 3 + k3 / 3) + k4 / 6
+    return ifft()
+def dummyCrossYb(lbd) :
+    Ai_a = [299.92*1e-27, 2314.71*1e-27, 75.54*1e-27, 211.61*1e-27, 496.62*1e-27, 5.12*1e-27]
+    Bi_a = [973.12*1e-9, 977.05*1e-9, 1014.99*1e-9, 908.36*1e-9, 917.03*1e-9, 1059.54*1e-9]
+    Ci_a = [32.84*1e-9, 7.24*1e-9, 37.69*1e-9, 92.3*1e-9, 48.67*1e-9, 40.2*1e-9]
+
+    Ai_e = [268.98*1e-27, 633.48*1e-27, 104.74*1e-27, 323.84*1e-27, 2299.03*1e-27]
+    Bi_e = [981.68*1e-9, 1025.96*1e-9, 975.32*1e-9, 1072.08*1e-9, 977.53*1e-9]
+    Ci_e = [27.16*1e-9, 42.01*1e-9, 86.16*1e-9, 44.96*1e-9, 7.25*1e-9]
+
+    sigma_a = np.zeros(np.size(lbd))
+    sigma_e = np.zeros(np.size(lbd))
+
+    for jk in range(np.size(Ai_a)) :
+        sigma_a = sigma_a+(Ai_a[jk]*np.exp(-(((lbd-Bi_a[jk]))/Ci_a[jk])**2))
+    for jk in range(np.size(Ai_e)) :
+        sigma_e = sigma_e + (Ai_e[jk]*np.exp(-(((lbd-Bi_e[jk]))/Ci_e[jk])**2))
+
+    return sigma_a, sigma_e
+
+def propagationFibreGain(E, L, h, l0, lc, tol, t, f, lbd, alpha, betas, gamma, fR, frep, Pp, lbd_p, sigma_a, sigma_e,
+                         sigma_ap, sigma_ep, N_ions, r_core, Gamma_P) :
+
+    c = 299792458
+    f0 = c/l0
+    fc = c/lc
+    f = (f+f0) - fc
+    ww0 = (2*np.pi*f) + (2*np.pi*fc)
+    wshift = np.fft.fftshift(2*np.pi*f)
+    hR_w = ramanResponseBW(fR, ww0)
+    tau_shock = 1/(2*np.pi*f0)
+    Eout, Pump_out = adaptiveSolverGain(E, L , h, alpha, betas, gamma, fR, hR_w, tau_shock, t, lbd, wshift, tol,
+                        frep, Pp, lbd_p, sigma_a,sigma_e, sigma_ap, sigma_ep, N_ions, r_core,Gamma_P,ww0)
+    return Eout, Pump_out

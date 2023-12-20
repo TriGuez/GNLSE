@@ -7,7 +7,7 @@ set(0,'DefaultFigureWindowStyle','docked')
 
 % Définition des paramètres de simus & des axes utiles
 c = 299792458;
-Tspan = 4e-12;
+Tspan = 5e-12;
 lambda_low = 900e-9;
 lambda_high = 1300e-9;
 l0 = 1040e-9;

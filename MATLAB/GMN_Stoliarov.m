@@ -2,9 +2,9 @@ clear
 close all
 format long g
 c = 299792458;
-Tspan = 10e-12;
-lambda_low = 980e-9;
-lambda_high = 1200e-9;
+Tspan = 15e-12;
+lambda_low = 900e-9;
+lambda_high = 1300e-9;
 l0 = 1100e-9;
 [t, dt, f, df, w, lbd, res, lambda_low, lambda_high] = initGNLSE(Tspan, l0, lambda_low, lambda_high);
 f0 = c./l0;
@@ -16,7 +16,7 @@ C2 = 0;
 t_shift =8e-12;
 l1 = 1040e-9;
 f1 = c./l1;
-frep = 1e6;
+frep = 10e6;
 E = gaussianPulse(P, C2, t0_p, f1,t_shift, t, f, f0);
 singlePlot(E, t, lbd, lambda_low, lambda_high, 'linear')
 
@@ -30,11 +30,11 @@ r_core = (11.5/2)*1e-6;
 r_clad = (125/2)*1e-6;
 fR = 0.18;
 Gamma_P = (pi*r_core.^2)./(pi*r_clad.^2);
-[sigma_a, sigma_e] = VLMAcrossSections(lbd);
+[sigma_a, sigma_e] = dummyCrossYb(lbd);
 N_ions = 7.45113843884923e25;
 Pp = 1;
 lbd_p = 976e-9;
-[sigma_ap, sigma_ep] = VLMAcrossSections(lbd_p);
+[sigma_ap, sigma_ep] = dummyCrossYb(lbd_p);
 tol = 1e-7;
 [Eout,~,~,pout] = propagationFibreGain(E, h, h/2, l0, 1040e-9, tol, t, f, lbd, 0,...
     betas, gamma,fR, frep,Pp, lbd_p,sigma_a,sigma_e,sigma_ap, sigma_ep,...
