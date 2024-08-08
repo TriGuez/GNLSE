@@ -4,6 +4,7 @@ import multiprocessing
 import tqdm
 import matplotlib.pyplot as plt
 from misc_math import *
+from math import factorial
 
 
 def initGNLSE(Tspan, l0, lambda_low, lambda_high):
@@ -335,7 +336,7 @@ def RK4ip(E, h, alpha, betas, gamma, fR, hR_w, tau_shock, lbd, wshift) :
 
     beta = betas[0]/2*wshift**2
     for jl in range(1,np.size(betas)) :
-        beta = beta + betas[jl]/np.math.factorial(jl+2)*wshift**(jl+2)
+        beta = beta + betas[jl]/factorial(jl+2)*wshift**(jl+2)
     
     opdisphalf = np.exp((-alpha/2-1j*beta)*h/2)
     y[:] = E
@@ -519,7 +520,7 @@ def RK4IPGain(E, h, alpha, betas, gamma, fR, hR_w, tau_shock, lbd, wshift,g) :
 
     beta = betas[0] / 2 * wshift ** 2
     for jl in range(1, np.size(betas)):
-        beta = beta + betas[jl] / np.math.factorial(jl + 2) * wshift ** (jl + 2)
+        beta = beta + betas[jl] / factorial(jl + 2) * wshift ** (jl + 2)
     g = np.fft.fftshift(g)
     opdisphalf = np.exp((-alpha / 2 - 1j * beta + g/2) * h / 2)
     y[:] = E
