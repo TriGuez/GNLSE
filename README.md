@@ -93,6 +93,17 @@ $$ \widehat{N}_{I} = {\exp}({{-(z-z')}\widehat{L}})\widehat{N} {\exp}({{(z-z')}\
 
 So, by setting $z' = z+{h\over 2}$, it's easy to integrate eq. **(7)** using standard integration algorithms.
 
+## Integration of the rate equations for Yb-doped fibers
+
+A version of the solver is implemented along with the rate equations for Yb-doped fibers. It is based on the algorithm proposed by Stoliarov *et al.* [6]. The solver computes the gain over the spectral window at each integration step. The gain is evaluated from : 
+
+$$ g(z,\omega) = [\sigma^{a}(\omega) + \sigma^{e}(\omega)] n_{2}(z) - \sigma^{a} N_{Yb}\ \ \ \ \ \ \ \ \ \ \textbf{(9)} $$
+
+$$ n_2(z) = N_{Yb}{{{{\sigma_{p}^{a}\Gamma_{p}}\over{\hbar \omega}} P_{p}(z) + f_{rep} \int{{{\sigma^{a}(\omega)\rho(\omega)}\over{\hbar \omega}}d\omega}}\over{{{(\sigma_{p}{{a}+\sigma_{p}^{e})\Gamma_{p}}\over{\hbar \omega}} P_{p}(z) + f_{rep} \int{{{(\sigma^{a}(\omega)+\sigma^{e}(\omega))\rho(\omega)}\over{\hbar \omega}}d\omega}+{{A_{eff}}\over{\tau}}}}}\ \ \ \ \ \ \ \ \ \ \textbf{(10)} $$
+
+$$ {{dP_{p}(z)}\over{dz}} = [(\sigma_{p}^{a} + \sigma_{p}^{e})n_{2}(z) - \sigma_{p}^{a}N_{Yb})]\Gamma_{p} P_{p}(z) - \alpha(\omega_{p})P_{p}(z)\ \ \ \ \ \ \ \ \ \ \textbf{(11)} $$
+
+The solver for the gain integrated algorithm can be called with the `propagationFibreGain()` function.
 ## List of functions
 
 ## - adaptiveSolver.m
@@ -514,3 +525,4 @@ Outputs :
 * [3] : Nguyen, D. T. *Modeling and Design Photonics by Examples using Matlab*, IOP publishing, 2021. doi : 10.1088/978-0-7503-2272-0
 * [4] : Blow, K. J., & Wood, D. (1989). *Theoretical description of transient stimulated Raman scattering in optical fibers.* IEEE Journal of Quantum Electronics, 25(12), 2665–2673.
 * [5] : Sørensen, S. T. *Deep-blue supercontinuum light sources based on tapered photonic crystal fibers*, PhD thesis, DTU Fotonik ,2013.
+* [6] : Stoliarov, D., Manuylovich, E., Koviarov, A., Galiakhmetova, D. and Rafailov, E. *Gain-managed nonlinear amplification of ultra-long mode-locked fiber laser*, Opt. Exp. 31(26), 2023 
