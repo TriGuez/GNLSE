@@ -192,7 +192,7 @@ Description :
 
 This function creates the complex enveloppe vector of a gaussian optical pulse. An amplitude noise of one photon per spectral node is added, based on the following : 
 
-$$A_{noise}(t) = \mathcal{F}^{-1}\Bigg[({T_{max}\hbar \omega})^{1/2} {\exp}(-i\psi(\omega_n))\Bigg] (t) \ \ \ \ \ \ \ \ \ \ \textbf{(9)}$$ 
+$$A_{noise}(t) = \mathcal{F}^{-1}\Bigg[({T_{max}\hbar \omega})^{1/2} {\exp}(-i\psi(\omega_n))\Bigg] (t) \ \ \ \ \ \ \ \ \ \ \textbf{(12)}$$ 
 
 where $\psi(\omega_n)$ follows a normal distribution.
 
@@ -410,7 +410,7 @@ E = rectPulse(P, tFWHM, f1, t, f, f0)
 
 Description : 
 
-This function computes the complex enveloppe of a rectangular optical pulse, with an amplitude noise according to eq. **(9)**.
+This function computes the complex enveloppe of a rectangular optical pulse, with an amplitude noise according to eq. **(12)**.
 
 Inputs : 
 
@@ -461,7 +461,7 @@ E = sechPulse(P, C2, t0, f1, t_shift, t, f, f0)
 
 Description : 
 
-This function computes the complex enveloppe of an hyperbolic secant optical pulse with amplitude noise according to eq. **(9)**.
+This function computes the complex enveloppe of an hyperbolic secant optical pulse with amplitude noise according to eq. **(12)**.
 
 Inputs : 
 
