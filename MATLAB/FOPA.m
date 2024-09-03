@@ -37,9 +37,7 @@ L_SUP5 = 8e-2;
 h = L_SUP5/200;
 tol = 1e-5;
 Esig = rectPulse(1e-3,Tspan-1e-12, f2, t, f, f0);
-    Eseul = propagationFibre(Esig, L_SUP5, h, l0, l2, tol, t, f, lbd,...
-                alpha, betas_SUP5, gamma_SUP5, fR, 'SUP5');
-%     E = Eout+Epump;
-%     [Eamp, ~, ~] = propagationFibre(E, L_SUP5, h, l0, l1, tol, t, f, lbd,...
-%                 alpha, betas_SUP5, gamma_SUP5, fR, 'SUP5');
-%     singlePlot(Eout, t, lbd, lambda_low, lambda_high, 'linear');
+     E = Eout+Epump;
+     [Eamp, ~, ~] = propagationFibre(E, L_SUP5, h, l0, l1, tol, t, f, lbd,...
+                 alpha, betas_SUP5, gamma_SUP5, fR, 'SUP5');
+     singlePlot(Eout, t, lbd, lambda_low, lambda_high, 'linear');

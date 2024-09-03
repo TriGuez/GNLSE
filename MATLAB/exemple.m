@@ -34,24 +34,11 @@ tshift = -3e-12;
 P_p = (N^2*abs(betas(1)))./(t0_p^2*gamma);
 Epump = sechPulse(P_p,0,t0_p,f_p,tshift,t,f,f0);
 
-% Paramètres pour animation + sauvegarde dans une matrice
-slices = 500;
-dL = L/slices;
-h = dL/1000;
-Esave = zeros(slices+1,length(t));
-Eout = Epump;
-Esave(1,:) = Epump;
-for jk = 2:slices
-    Eout = propagationFibre(Eout, dL, h, l0, l0, tol, t, f, lbd,...
-             alpha, betas, gamma, fR, 'Propagation example');
-    singlePlot(Eout, t, lbd, lambda_low, lambda_high, 'linear')
-    title(['L = ' num2str(jk*dL) ' m'])
-    Esave(jk,:) = Eout;
-    drawnow
-end
+% Paramètres de propagation
+h = L/1000;
+
 
 % Simulation sans animation
-% Eout = propagationFibre(Epump,L,h,l0,l1,tol,t,f,lbd,alpha,betas,gamma,...
-%     fR, 'Raman self frequency shift');
-% singlePlot(Eout, t, lbd, lambda_low, lambda_high, 'linear')
-propagationMap(Esave(1:end,:),t,lbd,lambda_low,lambda_high,L,'linear');
+Eout = propagationFibre(Epump,L,h,l0,l1,tol,t,f,lbd,alpha,betas,gamma,...
+    fR, 'Raman self frequency shift');
+singlePlot(Eout, t, lbd, lambda_low, lambda_high, 'linear')
