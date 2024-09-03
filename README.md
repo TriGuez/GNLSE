@@ -30,6 +30,7 @@ betas = [-3.53571099317077e-26, 3.68095336905838e-41,2.0172694409917e-55...
          ,-1.31835263681886e-69];
 gamma = 0.0742400655658342;
 L = 1;
+h = L/1000;
 fR = 0.18;
 ```
 The next section is defining the optical fibers via 5 parameters : 
@@ -38,6 +39,7 @@ The next section is defining the optical fibers via 5 parameters :
 * betas is a vector containing the Taylor coefficients of the propagation constant in the fiber, in s $^{n}$.m $^{-1}$ , n $\geq$ 2
 * gamma is the nonlinear coefficient of the fiber, in W $^{-1}$.m $^{-1}$. It could also be a vector containing $\gamma(\lambda)$
 * L is the fiber length, in m
+* *h* is the initial integration stepsize
 * fR is the fractionnal Raman response of the fiber. If set to 0, the solver will compute the propagation without considering the Raman response. Typically, $f_R = 0.18$ in fused silica [2].
 
 In the next section, we are defining the input optical pulse : 
@@ -57,50 +59,15 @@ $$ A(z=0,t) = \sqrt{P} \text{ sech}\Bigg({{t-t_{shift}}\over{t_0}} \Bigg) {\exp}
 
 We can see here that it's possible to add another parameter, called $C_2$ which is corresponding to the second order taylor coefficient of the spectral phase of the pulse. This parameter allow the pulse to be chirped.
 
-Since the physical parameters are defined, we can now focus on the numerical simulation. In the case of a propagation over a small distance, it si possible to create an animation of the propagation. We need first to set some parameters : 
-
-```Matlab
-slices = 500;
-dL = L/slices;
-h = dL/10000;
-Esave = zeros(slices+1,length(t));
-Eout = Epump;
-Esave(1,:) = Epump;
-```
-
-The parameters *slices*, *dL* & *h* are used to defined the animation. In this example, we choose to play 200 frames for the propagation over *L*. Then, we need to define the distance to propagate for one frame, which is *dL*. In the end, we need to define the initial stepsize *h* to solve the propagation over *dL*.
-Then, we define *Esave* which is a matrix containing the optical field after each propagation over *dL*. The first slice of the matrix is initialized with *Epump*, as well as *Eout* for the solving loop : 
-```Matlab
-for jk = 2:slices
-    Eout = propagationFibre(Eout, dL, h, l0, l0, tol, t, f, lbd,...
-             alpha, betas, gamma, fR, 'Propagation example');
-    singlePlot(Eout, t, lbd, lambda_low, lambda_high, 'linear')
-    title(['L = ' num2str(jk*dL) ' m'])
-    Esave(jk,:) = Eout;
-    drawnow
-end
-```
-Here, the function `propagationFibre()` is calling the RK4IP solver with the previously defined parameters. It also take as input a string to prompt while computation. The function `singlePlot()` is displaying the resulting optical field in both temporal & spectral domains. At this point, you should get in figure 1 : 
-
-![SSFS](https://user-images.githubusercontent.com/121152666/212467904-056e3cc5-cebf-482a-9ce6-c3bdef9806cc.gif)
-
-
-In order to understand what happend, we can also use the following line : 
-```Matlab
-propagationMap(Esave,t,lbd,lambda_low,lambda_high,L);
-```
-Which will display all the slices in the matrix *Esave* in both domains : 
-
-![image](https://user-images.githubusercontent.com/121152666/217881255-de63f13e-0c2b-43f5-9c73-384f8d56cf86.png)
-
-
-In the end, we can of course propagates over *L* without animation stuff : 
+Since the physical parameters are defined, we can now focus on the numerical simulation. You can run the simulation by calling the function `propagationFibre()`
 ```Matlab
 Eout = propagationFibre(Epump,L,h,l0,l1,tol,t,f,lbd,alpha,betas,gamma,...
     fR, 'Propagation example');
 singlePlot(Eout, t, lbd, lambda_low, lambda_high, 'linear')
 ```
+And plot the result with the `singlePlot()` function : 
 
+![Copie d'écran_20240903_171001](https://github.com/user-attachments/assets/589fb1a3-6331-416d-9617-c0f5addacd06)
 ## Solver description
 As mentionned before, this solver is based on the Runge-Kutta 4 algorithm for solving ODEs. To use this algortihm on eq. **(1)**, we need to do some maths : 
 
