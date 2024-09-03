@@ -36,18 +36,11 @@ Pp = 1;
 lbd_p = 976e-9;
 [sigma_ap, sigma_ep] = dummyCrossYb(lbd_p);
 tol = 1e-7;
-[Eout,~,~,pout] = propagationFibreGain(E, h, h/2, l0, 1040e-9, tol, t, f, lbd, 0,...
-    betas, gamma,fR, frep,Pp, lbd_p,sigma_a,sigma_e,sigma_ap, sigma_ep,...
-    N_ions, r_core,Gamma_P,'LMA-10-125');
-Esave = Eout';
-for jk = 2:slices
-    [Eout,~,~,pout] = propagationFibreGain(Eout, h, h/2, l0, 1040e-9, tol, t, f, lbd, 0,...
-    betas, gamma,fR, frep,pout, lbd_p,sigma_a,sigma_e,sigma_ap, sigma_ep,...
-    N_ions, r_core,Gamma_P,'LMA-10-125');
-    Esave = [Esave Eout'];
-end
-Esave = Esave';
-propagationMap(Esave,t,lbd,lambda_low,lambda_high,L,'log')
+[Eout,~,~,Pout] = propagationFibreGain(E, L, h, l0, 1040e-9, tol, t, f ,lbd, 0,...
+    betas, gamma, fR, frep, Pp, lbd_p, sigma_a, sigma_e, sigma_ap, sigma_ep,...
+    N_ions, r_core, Gamma_P, 'LMA-10-125');
+figure()
+singlePlot(Eout,t, lbd, lambda_low, lambda_high, 'linear')
 bcomp = GratingCompressor(1200,45,l0);
 figure()
 [Ecomp, Ltot] = compressPulse(Eout,t,f,l0,l0,bcomp,1e-4,lambda_low,1300e-9,lbd);
