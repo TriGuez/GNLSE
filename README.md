@@ -103,7 +103,7 @@ $$ n_2(z) = N_{Yb}{{{{\sigma_{p}^{a}\Gamma_{p}}\over{\hbar \omega}} P_{p}(z) + f
 
 $$ {{dP_{p}(z)}\over{dz}} = [(\sigma_{p}^{a} + \sigma_{p}^{e})n_{2}(z) - \sigma_{p}^{a}N_{Yb})]\Gamma_{p} P_{p}(z) - \alpha(\omega_{p})P_{p}(z)\ \ \ \ \ \ \ \ \ \ \textbf{(11)} $$
 
-The solver for the gain integrated algorithm can be called with the `propagationFibreGain()` function.
+The solver for the gain integrated algorithm can be called with the `propagationFibreGain()` function, and an example of its implementation can be found in the `GMN_Stoliarov` script
 ## List of functions
 
 ## - adaptiveSolver.m
