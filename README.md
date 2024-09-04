@@ -53,7 +53,7 @@ tshift = -3e-12;
 P_p = (N^2*abs(betas(1)))./(t0_p^2*gamma);
 Epump = sechPulse(P_p,0,t0_p,f_p,tshift,t,f,f0);
 ```
-The pulse is here defined as a 2<sup>nd</sup> order soliton, using the soliton area theorem. $l1$ is defining the central wavelength of the pulse, which is the same here as the central wavelength of the simulation. We also need to compute the corresponding frequency, i.e $f_p$ We can add a temporal shift of the maximum of the pulse. The complex enveloppe of the pulse is then defined using `sechPulse()` as : 
+The pulse is here defined as a 2<sup>nd</sup> order soliton, using the soliton area theorem. $l1$ is defining the central wavelength of the pulse, which is the same here as the central wavelength of the simulation. We also need to compute the corresponding frequency, i.e $f_p$ We can add a temporal shift of the maximum of the pulse. The complex envelop of the pulse is then defined using `sechPulse()` as : 
 
 $$ A(z=0,t) = \sqrt{P} \text{ sech}\Bigg({{t-t_{shift}}\over{t_0}} \Bigg) {\exp}\Bigg({i\Big({{C_2}\over{2}}(\omega-\omega_0)^2\Big)-\omega_0 t} \Bigg)\ \ \ \ \ \ \ \ \ \ \textbf{(2)} $$
 
@@ -114,11 +114,11 @@ Usage :
 ```
 Description :
 
-This function computes the complex enveloppe of an optical pulse after its propagation in a given optical fiber by solving eq. **(1)**. This solver is based on a RK4IP algorithm, and is using an intelligent adaptative stepsize from [3].
+This function computes the complex envelop of an optical pulse after its propagation in a given optical fiber by solving eq. **(1)**. This solver is based on a RK4IP algorithm, and is using an intelligent adaptative stepsize from [3].
 
 Inputs : 
 
-* E : Complex enveloppe of the input optical pulse
+* E : Complex envelop of the input optical pulse
 * L : Length of the fiber [m]
 * h : Initial stepsize [m]
 * alpha : Confinement losses of the fiber [m $^{-1}$]
@@ -134,9 +134,53 @@ Inputs :
 
 Outputs : 
 
-* Eout : Complex enveloppe of the pulse after the fiber
+* Eout : Complex envelop of the pulse after the fiber
 * temp_rad : Duration evolution of the pulse during the propagation [s]
 * spec_rad : Spectral width evolution of the pulse during the propagation [m]
+
+## - adaptiveSolverGain.m
+Usage : 
+```Matlab
+ [Eout, temp_rad, spec_rad, Pump_out] = adaptativeSolverGain(E, L, h, alpha, betas, gamma, fR,...
+                                        hR_w, tau_shock, t, lbd, wshift, tol, frep, Pp, lbd_p,...
+                                        sigma_a, sigma_e, sigma_ap, sigma_ep, N_ions, r_core,...
+                                        Gamma_P, ww0, FiberName)
+```
+Description : This function computes the complex envelop of an optical pulse after its propagation in a given Yb-doped fiber.
+
+Inputs : 
+
+* E : Complex envelop of the input optical pulse
+* L : Length of the fiber [m]
+* h : Initial stepsize [m]
+* alpha : Confinement losses of the fiber [m $^{-1}$]
+* betas : Taylor coefficients of the propagation constant [s $^{n}$.m $^{-1}$,  n $\geq$ 2]
+* gamma : Nonlinear coefficient of the fiber [W $^{-1}$.m $^{-1}$]
+* fR : Fractionnal Raman response. Raman scattering is neglected if set to 0
+* hR_w : Raman scattering response of the propagation medium
+* tau_shock : Shock time for self-steepening [s]
+* lbd : Wavelength vector of the simulation [m]
+* wshift : Fourier shift of the simulation angular frequency vector [rad.s $^{-1}$]
+* tol : Maximum tolerance for the adaptative stepsize
+* frep : Repetition rate of the input laser [Hz]
+* Pp : Input pump power [W]
+* lbd_p : Pump wavelength [m]
+* sigma_a : absorption cross sections over the spectral window of the simulation [m $^{2}$]
+* sigma_e : emission cross sections over the spectral window of the simulation [m $^{2}$]
+* sigma_ap : absorption cross section at the pump wavelength [m $^{2}$]
+* sigma_ep : emission cross section at the pump wavelength [m $^{2}$]
+* N_ions : Number of Yb ions in the glass matrix [m $^{-3}$]
+* r_core : radius of the fiber core
+* Gamma_P : overlap of the pump mode and the core of the fiber
+* ww0 : vector of angular frequency [rad.s $^{-1}$]
+* FiberName : Name of the fiber
+
+Outputs : 
+
+* Eout : Complex envelop of the pulse after the fiber
+* temp_rad : Duration evolution of the pulse during the propagation [s]
+* spec_rad : Spectral width evolution of the pulse during the propagation [m]
+* Pump_out : Residual pump power at the output of the fiber
 
 ## - autocoTrace.m
 Usage : 
@@ -150,11 +194,30 @@ This function computes the autocorrelation function of an optical pulse.
 
 Inputs : 
 
-* E : Complex enveloppe of the input optical pulse OR Intensity enveloppe of the input optical pulse
+* E : Complex envelop of the input optical pulse OR Intensity envelop of the input optical pulse
 
 Outputs : 
 
 * AC : Normalized intensity profile of the autocorrelation trace.
+
+## - centerPulse.m
+Usage : 
+```Matlab
+Ecenter = centerPulse(E,t)
+```
+
+Description :
+
+This function center the input pulse in the temporal domain
+
+Inputs : 
+
+* E : Complex envelop of the input pulse
+* t : time vector [s]
+
+Output : 
+
+* Ecenter : complex envelop of the centered pulse
 
 ## - compressPulse.m
 Usage : 
@@ -168,7 +231,7 @@ This function calculates the best compressor parameters to minimize the autocorr
 
 Inputs : 
 
-* E : Complex enveloppe of the optical pulse to compress
+* E : Complex envelop of the optical pulse to compress
 * t : Time vector of the simulation [s]
 * f : Frequency vector of the simulation [Hz]
 * l0 : Central wavelength of the simulation [m]
@@ -178,9 +241,28 @@ Inputs :
   
 Outputs : 
 
-* Ecomp : Complex enveloppe of the compressed pulse
+* Ecomp : Complex envelop of the compressed pulse
 * Ltot : Total length through the dispersive elements
 * Dtot : Total dispersion coefficients for the compressor [s $^{n}$, n $\geq$ 2]
+
+## - dummyCrossYb.m
+Usage : 
+```Matlab
+[sig_a, sig_e] = dummyCrossYb(lbd)
+```
+
+Description : 
+
+This function computes the absorption and emission cross sections of a dummy yb-doped fiber over the given spectral window.
+
+Input : 
+
+* lbd : wavelength vector [m]
+
+Outputs : 
+
+* sig_a : absorption cross section [m $^{2}$]
+* sig_e : emission cross section [m $^{2}$]
 
 ## - gaussianPulse.m
 Usage : 
@@ -190,7 +272,7 @@ E = gaussianPulse(P,C2,t0,f1,t_shift,t,f, f0)
 
 Description :
 
-This function creates the complex enveloppe vector of a gaussian optical pulse. An amplitude noise of one photon per spectral node is added, based on the following : 
+This function creates the complex envelop vector of a gaussian optical pulse. An amplitude noise of one photon per spectral node is added, based on the following : 
 
 $$A_{noise}(t) = \mathcal{F}^{-1}\Bigg[({T_{max}\hbar \omega})^{1/2} {\exp}(-i\psi(\omega_n))\Bigg] (t) \ \ \ \ \ \ \ \ \ \ \textbf{(12)}$$ 
 
@@ -209,7 +291,7 @@ Inputs :
 
 Outputs :
 
-* E : Complex enveloppe of the optical pulse
+* E : Complex envelop of the optical pulse
 
 ## - gaussRadius.m
 Usage : 
@@ -230,6 +312,25 @@ Inputs :
 Outpus : 
 
 * radius : Evaluated radius [x-units]
+
+## - GratingCompressor.m
+Usage : 
+```matlab
+[betas] = GratingCompressor(N, theta_i, lbd)
+```
+
+Description : 
+
+This function computes the 2nd, 3rd and 4th orders of dispersion of a Treacy compressor
+
+Inputs : 
+
+* N : grating density [lines.mm $^{-1}$]
+* theta_i : incidence angle of the beam. Must be contained between the Littrow angle and 90°  [°]
+* lbd : Central wavelength of the input pulse [m]
+
+Output : 
+* betas : vector containing the dispersion parameters [s $^{n}$.m $^{-1}$, 2 $\leq$ n $\leq$ 4]
 
 ## - initGNLSE.m
 Usage : 
@@ -269,7 +370,7 @@ Performs the linear propagation of an optical pulse through a dispersive fiber
 
 Inputs : 
 
-* E : Complex enveloppe of the input optical pulse
+* E : Complex envelop of the input optical pulse
 * f : Frequency vector of the simulation [Hz]
 * l0 : Central wavelength of the simulation [m]
 * lc : Central wavelength of the optical pulse [m]
@@ -278,7 +379,32 @@ Inputs :
 
 Outputs : 
 
-* TE : Complex enveloppe of the output optical pulse
+* TE : Complex envelop of the output optical pulse
+
+## - n2yb.m
+Usage : 
+```Matlab
+n_up = n2yb(ww0, rho_w, sigma_a, sigma_e, lbd_p, Pp, Gamma_P, frep, rcore, N_ions)
+```
+
+Description : This function computes the population of ions in the excited state for a given pump power and signal input.
+
+Inputs : 
+
+* ww0 : vector of angular frequency [rad.s $^{-1}$]
+* rho_w : spectral power density of the signal over the spectral window
+* sigma_a : absorption cross sections over the spectral window of the simulation [m $^{2}$]
+* sigma_e : emission cross sections over the spectral window of the simulation [m $^{2}$]
+* lbd_p : Pump wavelength [m]
+* Pp : Input pump power [W]
+* Gamma_P : overlap of the pump mode and the core of the fiber
+* frep : Repetition rate of the input laser [Hz]
+* r_core : radius of the fiber core
+* N_ions : Number of Yb ions in the glass matrix [m $^{-3}$]
+
+Output : 
+
+* n_up : ion population on the excited state
 
 ## - nonlinearStep.m
 Usage : 
@@ -292,7 +418,7 @@ Nonlinear quarter-step for the RK4IP algorithm without Raman scattering (i.e $f_
 
 Inputs : 
 
-* E : Complex enveloppe of the input optical pulse
+* E : Complex envelop of the input optical pulse
 * h : propagation stepsize [m]
 * gamma : Nonlinear coefficient of the fiber [W $^{-1}$.m $^{-1}$]
 * tau_shock : Shock time for self-steepening [s]
@@ -314,7 +440,7 @@ Nonlinear quarter-step for RK4IP algorithm including Raman scattering.
 
 Inputs : 
 
-* E : Complex enveloppe of the input optical pulse
+* E : Complex envelop of the input optical pulse
 * h : propagation stepsize [m]
 * fR : Fractionnal Raman response of the propagation medium (typ. 0.18 in fused silica) []
 * hR_w : Raman scattering response of the fiber in frequency domain
@@ -340,7 +466,7 @@ This function computes the propagation over a specific distance of an optical fi
 
 INPUTS : 
 
-* E : Complex enveloppe of the input electrical field
+* E : Complex envelop of the input electrical field
 * L : Length of the optical fiber [m]
 * h : Propagation initial stepsize [m]
 * l0 : Central vacuum wavelength of the simulation [m]
@@ -357,9 +483,55 @@ INPUTS :
 
 OUTPUTS :
 
-* Eout : Complex enveloppe of the output optical field
+* Eout : Complex envelop of the output optical field
 * temp_rad : pulse duration evolution during the propagation [s]
 * spec_rad : Pulse spectral width evolution during the propagation [m]
+
+## - propagationFibreGain.m
+Usage : 
+```Matlab
+[Eout, temp_rad, spec_rad, Pump_out] = propagationFibreGain(E, L, h, l0, lc, tol ,t, f, lbd, alpha, betas, gamma, fR,frep, Pp, lbd_p, sigma_a,...
+            sigma_e, sigma_ap, sigma_ep, N_ions, r_core,Gamma_P, FiberName)
+```
+
+Description :
+
+This function computes the propagation over a specific distance of a yb-doped fiber
+
+Inputs : 
+
+* E : Complex envelop of the input electrical field
+* L : Length of the optical fiber [m]
+* h : Propagation initial stepsize [m]
+* l0 : Central vacuum wavelength of the simulation [m]
+* lc : Central vacuum wavelength of the input optical field [m]
+* tol : Relative tolerance of the simulation []
+* t : Simulation time vector [s]
+* f : Simulation frequency vector [Hz]
+* lbd : Simulation wavelength vector [m]
+* alpha : Confinement losses of the fiber [m $^{-1}$]
+* betas : Taylor coefficients of the propagation constant at the given central wavelength [s $^{n}$.m $^{-1}$,  n $\geq$ 2]
+* gamma : Nonlinear coefficient of the fiber [W $^{-1}$.m $^{-1}$]
+* fR : Fractionnal Raman response of the propagation medium (0.18 in fused silica). Set to zero to exclude Raman scattering []
+* frep : Repetition rate of the input laser [Hz]
+* Pp : Input pump power [W]
+* lbd_p : Pump wavelength [m]
+* sigma_a : absorption cross sections over the spectral window of the simulation [m $^{2}$]
+* sigma_e : emission cross sections over the spectral window of the simulation [m $^{2}$]
+* sigma_ap : absorption cross section at the pump wavelength [m $^{2}$]
+* sigma_ep : emission cross section at the pump wavelength [m $^{2}$]
+* N_ions : Number of Yb ions in the glass matrix [m $^{-3}$]
+* r_core : radius of the fiber core
+* Gamma_P : overlap of the pump mode and the core of the fiber
+* FiberName : String to display while computing
+
+Outputs : 
+
+* Eout : Complex envelop of the pulse after the fiber
+* temp_rad : Duration evolution of the pulse during the propagation [s]
+* spec_rad : Spectral width evolution of the pulse during the propagation [m]
+* Pump_out : Residual pump power at the output of the fiber
+
 
 ## - propagationMap.m
 Usage : 
@@ -373,7 +545,7 @@ Display the slices of a saved propagation matrix in both temporal & spectral dom
 
 Inputs : 
 
-* E : Matrix of complex enveloppes
+* E : Matrix of complex envelops
 * t : time vector of the simulation [s]
 * lbd : Wavelength vector of the simulation [m]
 * lambda_low : Lowest wavelength to display [m]
@@ -402,6 +574,36 @@ Outputs :
 
 * hR_w : Raman scattering response in the frequency domain
 
+## - reconstructPulse.m
+Usage : 
+```Matlab
+[t, dt, f, df, w, lbd, res, Pulse] = reconstructPulse(filename, tspan, llow, lhigh, l0, Ep)
+```
+
+Description :
+
+This function creates the complex envelop of an optical pulse from a given optical spectrum, assuming zero phase
+
+Inputs : 
+
+* filename : path to the file containing the spectral information. Must be a two column file with [wavelength (nm)  spectrum (a.u)]
+* tspan : Half time window duration [s]
+* llow : lowest wavelength of the desired spectral window [m]
+* lhigh : highest wavelength of the desired spectral window [m]
+* l0 : central wavelength of the provided spectrum [m]
+* Ep : Energy of the reconstructed pulse [J]
+
+Outputs : 
+
+* t : created time vector [s]
+* dt : temporal resolution [s]
+* f : frequency vector [Hz]
+* df : spectral resolution [Hz]
+* w : angular frequency vector [rad.s $^{-1}$]
+* lbd : wavelength vector of the reconstructed pulse [nm]
+* Pulse : Complex envelop of the reconstructed pulse
+
+
 ## - rectPulse.m
 Usage : 
 ```Matlab
@@ -410,7 +612,7 @@ E = rectPulse(P, tFWHM, f1, t, f, f0)
 
 Description : 
 
-This function computes the complex enveloppe of a rectangular optical pulse, with an amplitude noise according to eq. **(12)**.
+This function computes the complex envelop of a rectangular optical pulse, with an amplitude noise according to eq. **(12)**.
 
 Inputs : 
 
@@ -423,7 +625,7 @@ Inputs :
 
 Outputs : 
 
-* E : Complex enveloppe of the rectangular pulse
+* E : Complex envelop of the rectangular pulse
 
 ## - RK4IP.m
 
@@ -438,7 +640,7 @@ Runge-Kutta 4 in interaction picture algorithm for the intelligent adaptative st
 
 Inputs : 
 
-* E : Complex enveloppe of the input electrical field
+* E : Complex envelop of the input electrical field
 * h : Propagation initial stepsize [m]
 * alpha : Confinement losses of the fiber [m $^{-1}$]
 * betas : Taylor coefficients of the propagation constant at the given central wavelength [s $^{n}$.m $^{-1}$,  n $\geq$ 2]
@@ -451,7 +653,34 @@ Inputs :
 
 Outputs : 
 
-* TE : Complex enveloppe of the output pulse
+* TE : Complex envelop of the output pulse
+
+## - RK4IPGain.m
+Usage : 
+```Matlab
+TE = RK4IPGain(E, h, alpha, betas, gamma, fR, hR_w, tau_shock, lbd, wshift, g)
+```
+
+Description : 
+
+This function is the adapted RK4IP algorithm for yb-doped fibers.
+
+Inputs : 
+* E : Complex envelop of the input electrical field
+* h : Propagation initial stepsize [m]
+* alpha : Confinement losses of the fiber [m $^{-1}$]
+* betas : Taylor coefficients of the propagation constant at the given central wavelength [s $^{n}$.m $^{-1}$,  n $\geq$ 2]
+* gamma : Nonlinear coefficient of the fiber [W $^{-1}$.m $^{-1}$]
+* fR : Fractionnal Raman response of the propagation medium (0.18 in fused silica). Set to zero to exclude Raman scattering []
+* hR_w : Raman scattering response in the frequency domain
+* tau_shock : Shock time for self-steepening [s]
+* lbd : Simulation wavelength vector [m]
+* wshift : Fourier shift of the simulation angular frequency vector [rad.s $^{-1}$]
+* g : small signal gain [m $^{-1}$]
+
+Output : 
+
+* TE : Complex envelop of the output pulse
 
 ## - sechPulse.m
 Usage : 
@@ -461,7 +690,7 @@ E = sechPulse(P, C2, t0, f1, t_shift, t, f, f0)
 
 Description : 
 
-This function computes the complex enveloppe of an hyperbolic secant optical pulse with amplitude noise according to eq. **(12)**.
+This function computes the complex envelop of an hyperbolic secant optical pulse with amplitude noise according to eq. **(12)**.
 
 Inputs : 
 
@@ -476,7 +705,7 @@ Inputs :
 
 Outputs :
 
-* E : Complex enveloppe of the optical pulse
+* E : Complex envelop of the optical pulse
 
 ## - silicaLosses.m
 Usage : 
@@ -517,7 +746,62 @@ Inputs :
 
 Outputs : 
 
+## - spectralFilter.m
+Usage : 
+```Matlab
+Eout = spectralFilter(E, l_c, lFWHM, t, lbd, filterType)
+```
 
+Description : 
+
+This function can filter the complex envelop of an optical pulse.
+
+Inputs : 
+
+* E : complex envelop of the input pulse
+* l_c : center wavelength of the filter [m]
+* lFWHM : spectral width of the filter [m]
+* t : temporal vector [s]
+* lbd : wavelength vector [m]
+* filterType : Type of the filter. Options are : 
+    * gaussian (default)
+    * square
+    * LPF (low pass filter, set lFWHM to 0)
+    * HPF (high pass filter, set lFWHM to 0)
+
+Output 
+
+* Eout : complex envelop of the filtered pulse
+
+## - spectrogram.m
+Usage : 
+```Matlab
+Sp = spectrogram(P, G, dt, N)
+```
+
+Description : This function computes the spectrogram of the input pulse
+
+Inputs : 
+
+* P : complex envelop of the input pulse
+* G : vector describing the optical gate
+* dt : time resolution [s]
+* N : size of the created spectrogram
+
+Output : 
+
+* Sp : two dimensionnal array containing the spectrogram
+
+## Python usage
+
+Most of the described functions are also available for python usage. The implementation is mostly the same, just follow the `example.py` and `GMN_Stoliarov.py` scripts. Some functions may miss, please ask me if you need anything. The dependancies are listed in the `requirements.txt` file, which you can call with : 
+```Python
+python -m pip install -r requirements.txt
+```
+
+## Known issues
+
+In the Matlab implementation, you may have an error from the textprogressbar function if you force the script to stop. Just run the script another time to clear the error.
 
 ## References
 * [1] : Stéphane Balac, Arnaud Fernandez, Fabrice Mahé, Florian Méhats & Rozenn Texier-Picard. *The Interaction Picture method for solving the generalized nonlinear Schrödinger equation in optics*, ESAIM : Mathematical Modelling and Numerical Analysis, 50(4) :945-964, July 2016.
