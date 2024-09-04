@@ -67,7 +67,7 @@ singlePlot(Eout, t, lbd, lambda_low, lambda_high, 'linear')
 ```
 And plot the result with the `singlePlot()` function : 
 
-![Copie d'écran_20240903_171001](https://github.com/user-attachments/assets/589fb1a3-6331-416d-9617-c0f5addacd06)
+![Example.png](example.png)
 ## Solver description
 As mentionned before, this solver is based on the Runge-Kutta 4 algorithm for solving ODEs. To use this algortihm on eq. **(1)**, we need to do some maths : 
 
