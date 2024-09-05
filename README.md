@@ -22,7 +22,7 @@ f0 = c./l0;
 wshift = fftshift(w);
 tol = 1e-7;
 ```
-This section is creating the usefull axes & values for the simulation, through the `initGNLSE()` function. Also, we need to define some physical values, such as half duration of the time window, the lowest & the highest wavelength of the simulation, and the central frequency of the simulation, which is set here to 1.10 $^{-7}$ .
+This section is creating the usefull axes & values for the simulation, through the `initGNLSE()` function. Also, we need to define some physical values, such as half duration of the time window, the lowest & the highest wavelength of the simulation, the central frequency of the simulation, and the solver tolerance which is set here to 1.10 $^{-7}$ .
 
 ```Matlab
 alpha = 0;
