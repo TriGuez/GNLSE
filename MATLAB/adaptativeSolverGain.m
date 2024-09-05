@@ -12,6 +12,7 @@ function [Eout, temp_rad, spec_rad,Pump_out] = adaptativeSolverGain(E, L , h, al
 %  The solver is an intelligent adaptative stepsize solver, from Nguyen, D. T.
 %  "Modeling and Design Photonics by Examples using Matlab", IOP publishing, 
 %  2021. doi : 10.1088/978-0-7503-2272-0
+%
 %  INPUTS : 
 %        E : Complex enveloppe of the input optical pulse
 %        L : Length of the optical fiber [m]
