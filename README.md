@@ -100,7 +100,7 @@ A version of the solver is implemented along with the rate equations for Yb-dope
 
 $$ g(z,\omega) = [\sigma^{a}(\omega) + \sigma^{e}(\omega)] n_{2}(z) - \sigma^{a} N_{Yb}\ \ \ \ \ \ \ \ \ \ \textbf{(9)} $$
 
-$$ n_2(z) = N_{Yb}{{{{\sigma_{p}^{a}\Gamma_{p}}\over{\hbar \omega}} P_{p}(z) + f_{rep} \int{{{\sigma^{a}(\omega)\rho(\omega)}\over{\hbar \omega}}d\omega}}\over{{{(\sigma_{p}{{a}+\sigma_{p}^{e})\Gamma_{p}}\over{\hbar \omega}} P_{p}(z) + f_{rep} \int{{{(\sigma^{a}(\omega)+\sigma^{e}(\omega))\rho(\omega)}\over{\hbar \omega}}d\omega}+{{A_{eff}}\over{\tau}}}}}\ \ \ \ \ \ \ \ \ \ \textbf{(10)} $$
+$$ n_2(z) = N_{Yb}{{{{\sigma_{p}^{a}\Gamma_{p}}\over{\hbar \omega}} P_{p}(z) + f_{rep} \int{{{\sigma^{a}(\omega)\rho(\omega)}\over{\hbar \omega}}d\omega}}\over{{{{(\sigma_{p}^{a}+\sigma_{p}^{e})\Gamma_{p}}\over{\hbar \omega}} P_{p}(z) + f_{rep} \int{{{(\sigma^{a}(\omega)+\sigma^{e}(\omega))\rho(\omega)}\over{\hbar \omega}}d\omega}+{{A_{eff}}\over{\tau}}}}}\ \ \ \ \ \ \ \ \ \ \textbf{(10)} $$
 
 $$ {{dP_{p}(z)}\over{dz}} = [(\sigma_{p}^{a} + \sigma_{p}^{e})n_{2}(z) - \sigma_{p}^{a}N_{Yb})]\Gamma_{p} P_{p}(z) - \alpha(\omega_{p})P_{p}(z)\ \ \ \ \ \ \ \ \ \ \textbf{(11)} $$
 
@@ -281,7 +281,7 @@ where $\psi(\omega_n)$ follows a normal distribution.
 
 Inputs : 
 
-* P : Peak power of the Fouier transform limited pulse [W]
+* P : Peak power of the Fourier transform limited pulse [W]
 * C2 : Second order coefficient of the Taylor developpment of the spectral phase [s $^{2}$]
 * t0 : 1/e half pulse duration [s]
 * f1 : Optical center frequency [Hz]
