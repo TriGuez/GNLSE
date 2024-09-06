@@ -38,7 +38,7 @@ Epump = sechPulse(P_p,0,t0_p,f_p,tshift,t,f,f0);
 h = L/1000;
 
 
-% Simulation sans animation
+% Simulation
 Eout = propagationFibre(Epump,L,h,l0,l1,tol,t,f,lbd,alpha,betas,gamma,...
     fR, 'Raman self frequency shift');
 singlePlot(Eout, t, lbd, lambda_low, lambda_high, 'linear')
