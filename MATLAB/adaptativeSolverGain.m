@@ -61,11 +61,11 @@ while Z_prop < L
         Espec = fftshift(fft(E)*dt)/1e-12;
         spec_rad = [spec_rad gaussRadius(lbd,abs(Espec).^2,'1/e')];
         textprogressbar((Z_prop/L)*100);
-        singlePlot(E,t,lbd,min(lbd),max(lbd),'linear')
+        % singlePlot(E,t,lbd,min(lbd),max(lbd),'linear')
 %         subplot(2,1,2)
 %         yyaxis right
         % plot(lbd, g)
-        drawnow
+        % drawnow
     end
     h = h*factor^(1/5);
     
