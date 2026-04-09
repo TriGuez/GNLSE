@@ -5,7 +5,7 @@ $${{\partial A(z,T)} \over {\partial z}} = -{{\alpha(\omega)}\over{2}} A(z,T) +\
 
 $$... i\gamma\Bigg(1+\tau_{shock}{{\partial}\over{\partial T}}\Bigg)\times \Bigg(A(z,T){\int}_{-\infty}^{\infty}{R(T')\vert A(z,T-T')\vert^{2}dT'}\Bigg)\ \ \ \ \ \ \ \ \ \ \textbf{(1)}$$
 
-This solver was developped for my PhD [thesis](https://cnrs.hal.science/tel-04901112/)
+This solver was developped as a part of my PhD [thesis](https://cnrs.hal.science/tel-04901112/) .
 ## Basic usage
 Try to run in the Matlab prompt : 
 ```Matlab
